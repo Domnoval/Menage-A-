@@ -384,3 +384,109 @@
     font-size: var(--text-heading);
   }
 }
+
+/* ============================================
+   ADDITIONAL STYLES
+   ============================================ */
+
+.edition-detail--loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  color: var(--soft-ash);
+}
+
+/* Thumbnails */
+.edition-detail__thumbnails {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-sm);
+  margin-top: var(--space-md);
+}
+
+.edition-detail__thumbnail {
+  aspect-ratio: 1;
+  background: var(--charcoal);
+  cursor: pointer;
+  overflow: hidden;
+  transition: opacity var(--transition-base);
+}
+
+.edition-detail__thumbnail:hover {
+  opacity: 0.7;
+}
+
+.edition-detail__thumbnail img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Option selector (generic for size, color, etc.) */
+.edition-detail__option {
+  padding: var(--space-lg) 0;
+  border-top: 1px solid var(--charcoal);
+}
+
+.edition-detail__option-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.edition-detail__option-label {
+  font-size: var(--text-small);
+  color: var(--soft-ash);
+}
+
+.edition-detail__option-values {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.edition-detail__option-btn {
+  min-width: 50px;
+  padding: var(--space-sm) var(--space-md);
+  background: transparent;
+  border: 1px solid var(--charcoal-elevated);
+  color: var(--white);
+  font-size: var(--text-small);
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.edition-detail__option-btn:hover {
+  border-color: var(--soft-ash);
+}
+
+.edition-detail__option-btn--selected {
+  background: var(--white);
+  border-color: var(--white);
+  color: var(--void-black);
+}
+
+/* Compare price */
+.edition-detail__compare-price {
+  font-size: var(--text-body);
+  color: var(--muted-ash);
+  text-decoration: line-through;
+  margin-left: var(--space-sm);
+}
+
+/* Tags */
+.edition-detail__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--charcoal);
+}
+
+.edition-detail__tag {
+  padding: 4px var(--space-sm);
+  background: var(--charcoal);
+  text-transform: capitalize;
+}

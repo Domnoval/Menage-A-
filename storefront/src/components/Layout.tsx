@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import Header from './Header';
 import Footer from './Footer';
+import CartDrawer from './CartDrawer';
 import './Layout.css';
 
 interface LayoutProps {
@@ -13,6 +14,7 @@ export default function Layout({ children }: LayoutProps) {
       <Header />
       <main className="main">{children}</main>
       <Footer />
+      <CartDrawer />
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 import './Header.css';
 
 const navItems = [
@@ -13,6 +14,9 @@ const navItems = [
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
+  const { cart, openCart } = useCart();
+
+  const cartCount = cart?.totalQuantity || 0;
 
   return (
     <header className="header">
@@ -39,9 +43,9 @@ export default function Header() {
 
         {/* Cart */}
         <div className="header__actions">
-          <button className="header__cart" aria-label="Open cart">
+          <button className="header__cart" aria-label="Open cart" onClick={openCart}>
             <span className="header__cart-text">Cart</span>
-            <span className="header__cart-count">0</span>
+            <span className="header__cart-count">{cartCount}</span>
           </button>
         </div>
 

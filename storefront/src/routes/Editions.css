@@ -381,3 +381,21 @@
     font-size: var(--text-small);
   }
 }
+
+/* ============================================
+   LOADING & CONFIG NOTE
+   ============================================ */
+
+.editions__loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  color: var(--soft-ash);
+}
+
+.editions__config-note {
+  text-align: center;
+  padding: var(--space-xl) 0;
+  color: var(--muted-ash);
+}

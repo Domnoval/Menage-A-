@@ -1,99 +1,85 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { useProducts, formatPrice, isNewProduct, getProductCategory } from '../hooks/useProducts';
+import { useCart } from '../context/CartContext';
 import './Editions.css';
 
 // Product categories
 type Category = 'all' | 'prints' | 'apparel' | 'objects';
 
-// Placeholder products - will connect to Shopify/Printful
-const products = [
+// Placeholder products - used when Shopify isn't configured
+const placeholderProducts = [
   {
     id: 'sacred-geometry-print-01',
+    handle: 'sacred-geometry-print-01',
     title: 'Sacred Geometry I',
     category: 'prints',
-    price: 45,
+    price: '45.00',
     comparePrice: null,
     edition: 'Open Edition',
-    sizes: ['8×10', '11×14', '16×20', '24×30'],
     image: null,
     isNew: true,
+    variantId: null,
   },
   {
     id: 'sacred-geometry-print-02',
+    handle: 'sacred-geometry-print-02',
     title: 'Sacred Geometry II',
     category: 'prints',
-    price: 45,
+    price: '45.00',
     comparePrice: null,
     edition: 'Open Edition',
-    sizes: ['8×10', '11×14', '16×20', '24×30'],
     image: null,
     isNew: false,
+    variantId: null,
   },
   {
     id: 'portal-series-print',
+    handle: 'portal-series-print',
     title: 'Portal Series',
     category: 'prints',
-    price: 85,
+    price: '85.00',
     comparePrice: null,
     edition: 'Limited Edition of 50',
-    sizes: ['16×20', '24×30'],
     image: null,
     isNew: true,
+    variantId: null,
   },
   {
     id: 'frequency-tee-black',
+    handle: 'frequency-tee-black',
     title: 'Frequency Tee',
     category: 'apparel',
-    price: 38,
+    price: '38.00',
     comparePrice: null,
     edition: null,
-    sizes: ['S', 'M', 'L', 'XL', '2XL'],
     image: null,
     isNew: false,
+    variantId: null,
   },
   {
     id: 'geometric-hoodie',
+    handle: 'geometric-hoodie',
     title: 'Geometric Hoodie',
     category: 'apparel',
-    price: 65,
+    price: '65.00',
     comparePrice: null,
     edition: null,
-    sizes: ['S', 'M', 'L', 'XL', '2XL'],
     image: null,
     isNew: true,
+    variantId: null,
   },
   {
     id: 'minimalist-backpack',
+    handle: 'minimalist-backpack',
     title: 'Minimalist Backpack',
     category: 'objects',
-    price: 60,
+    price: '60.00',
     comparePrice: null,
     edition: null,
-    sizes: null,
     image: null,
     isNew: false,
-  },
-  {
-    id: 'thought-form-print',
-    title: 'Thought Form',
-    category: 'prints',
-    price: 55,
-    comparePrice: null,
-    edition: 'Open Edition',
-    sizes: ['11×14', '16×20', '24×30'],
-    image: null,
-    isNew: false,
-  },
-  {
-    id: 'studio-tee-white',
-    title: 'Studio Tee',
-    category: 'apparel',
-    price: 35,
-    comparePrice: null,
-    edition: null,
-    sizes: ['S', 'M', 'L', 'XL'],
-    image: null,
-    isNew: false,
+    variantId: null,
   },
 ];
 
@@ -106,17 +92,53 @@ const categories: { value: Category; label: string }[] = [
 
 export default function Editions() {
   const [activeCategory, setActiveCategory] = useState<Category>('all');
-  const [addedToCart, setAddedToCart] = useState<string | null>(null);
+  const [addingToCart, setAddingToCart] = useState<string | null>(null);
+
+  // Fetch real products from Shopify
+  const { products: shopifyProducts, isLoading, isConfigured } = useProducts();
+  const { addToCart } = useCart();
+
+  // Transform Shopify products to our format or use placeholders
+  const products = useMemo(() => {
+    if (!isConfigured || shopifyProducts.length === 0) {
+      return placeholderProducts;
+    }
+
+    return shopifyProducts.map((product) => ({
+      id: product.id,
+      handle: product.handle,
+      title: product.title,
+      category: getProductCategory(product),
+      price: product.priceRange.minVariantPrice.amount,
+      currency: product.priceRange.minVariantPrice.currencyCode,
+      comparePrice: product.compareAtPriceRange?.minVariantPrice?.amount || null,
+      edition: product.tags.find((tag) => tag.toLowerCase().includes('edition')) || null,
+      image: product.featuredImage?.url || null,
+      imageAlt: product.featuredImage?.altText || product.title,
+      isNew: isNewProduct(product.createdAt),
+      variantId: product.variants[0]?.id || null,
+    }));
+  }, [shopifyProducts, isConfigured]);
 
   const filteredProducts = products.filter((product) => {
     if (activeCategory === 'all') return true;
     return product.category === activeCategory;
   });
 
-  const handleAddToCart = (productId: string) => {
-    setAddedToCart(productId);
-    // Will connect to Shopify cart later
-    setTimeout(() => setAddedToCart(null), 2000);
+  const handleQuickAdd = async (product: typeof products[0]) => {
+    if (!product.variantId || !isConfigured) {
+      // Show feedback even without Shopify
+      setAddingToCart(product.id);
+      setTimeout(() => setAddingToCart(null), 2000);
+      return;
+    }
+
+    setAddingToCart(product.id);
+    try {
+      await addToCart(product.variantId, 1);
+    } finally {
+      setTimeout(() => setAddingToCart(null), 500);
+    }
   };
 
   const getCategoryCount = (category: Category) => {
@@ -160,58 +182,72 @@ export default function Editions() {
       {/* Product Grid */}
       <section className="editions__grid-section">
         <div className="container">
-          <div className="editions__grid">
-            {filteredProducts.map((product, index) => (
-              <article
-                key={product.id}
-                className="product-card"
-                style={{ animationDelay: `${index * 0.05}s` }}
-              >
-                <Link to={`/editions/${product.id}`} className="product-card__link">
-                  {/* Image */}
-                  <div className="product-card__image-wrapper">
-                    <div className="product-card__image">
-                      {product.image ? (
-                        <img src={product.image} alt={product.title} />
-                      ) : (
-                        <div className="product-card__placeholder" />
-                      )}
-                    </div>
-                    {product.isNew && <span className="product-card__badge">New</span>}
-                  </div>
-
-                  {/* Info */}
-                  <div className="product-card__info">
-                    <h2 className="product-card__title">{product.title}</h2>
-                    {product.edition && (
-                      <span className="product-card__edition meta">{product.edition}</span>
-                    )}
-                    <div className="product-card__price-row">
-                      <span className="product-card__price">${product.price}</span>
-                      {product.comparePrice && (
-                        <span className="product-card__compare-price">
-                          ${product.comparePrice}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </Link>
-
-                {/* Quick Add */}
-                <button
-                  className={`product-card__add ${
-                    addedToCart === product.id ? 'product-card__add--added' : ''
-                  }`}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleAddToCart(product.id);
-                  }}
+          {isLoading ? (
+            <div className="editions__loading">
+              <p>Loading products...</p>
+            </div>
+          ) : (
+            <div className="editions__grid">
+              {filteredProducts.map((product, index) => (
+                <article
+                  key={product.id}
+                  className="product-card"
+                  style={{ animationDelay: `${index * 0.05}s` }}
                 >
-                  {addedToCart === product.id ? 'Added' : 'Quick Add'}
-                </button>
-              </article>
-            ))}
-          </div>
+                  <Link to={`/editions/${product.handle}`} className="product-card__link">
+                    {/* Image */}
+                    <div className="product-card__image-wrapper">
+                      <div className="product-card__image">
+                        {product.image ? (
+                          <img src={product.image} alt={product.title} />
+                        ) : (
+                          <div className="product-card__placeholder" />
+                        )}
+                      </div>
+                      {product.isNew && <span className="product-card__badge">New</span>}
+                    </div>
+
+                    {/* Info */}
+                    <div className="product-card__info">
+                      <h2 className="product-card__title">{product.title}</h2>
+                      {product.edition && (
+                        <span className="product-card__edition meta">{product.edition}</span>
+                      )}
+                      <div className="product-card__price-row">
+                        <span className="product-card__price">
+                          {formatPrice(product.price, product.currency || 'USD')}
+                        </span>
+                        {product.comparePrice && (
+                          <span className="product-card__compare-price">
+                            {formatPrice(product.comparePrice, product.currency || 'USD')}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </Link>
+
+                  {/* Quick Add */}
+                  <button
+                    className={`product-card__add ${
+                      addingToCart === product.id ? 'product-card__add--added' : ''
+                    }`}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      handleQuickAdd(product);
+                    }}
+                  >
+                    {addingToCart === product.id ? 'Added' : 'Quick Add'}
+                  </button>
+                </article>
+              ))}
+            </div>
+          )}
+
+          {!isConfigured && (
+            <p className="editions__config-note meta">
+              Connect Shopify to load real products. See .env.example for setup.
+            </p>
+          )}
         </div>
       </section>
 

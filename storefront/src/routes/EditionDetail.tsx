@@ -1,105 +1,78 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
+import { useProduct, formatPrice } from '../hooks/useProducts';
+import { useCart } from '../context/CartContext';
 import './EditionDetail.css';
-
-// Placeholder product data - will connect to Shopify
-const productsData: Record<string, {
-  id: string;
-  title: string;
-  category: string;
-  price: number;
-  description: string;
-  edition: string | null;
-  sizes: string[] | null;
-  details: string[];
-  image: string | null;
-}> = {
-  'sacred-geometry-print-01': {
-    id: 'sacred-geometry-print-01',
-    title: 'Sacred Geometry I',
-    category: 'prints',
-    price: 45,
-    description: 'A study in fundamental geometric relationships. Clean lines and precise proportions create a meditation on mathematical harmony.',
-    edition: 'Open Edition',
-    sizes: ['8×10', '11×14', '16×20', '24×30'],
-    details: [
-      'Giclée print on archival matte paper',
-      'Fade-resistant pigment inks',
-      'Ships flat in protective packaging',
-      'Printed on demand',
-    ],
-    image: null,
-  },
-  'portal-series-print': {
-    id: 'portal-series-print',
-    title: 'Portal Series',
-    category: 'prints',
-    price: 85,
-    description: 'From the Portal Series exploring thresholds between spaces. Each print is numbered and includes a certificate of authenticity.',
-    edition: 'Limited Edition of 50',
-    sizes: ['16×20', '24×30'],
-    details: [
-      'Giclée print on museum-grade cotton rag',
-      'Hand-numbered and signed',
-      'Certificate of authenticity included',
-      'Ships in archival tube',
-    ],
-    image: null,
-  },
-  'frequency-tee-black': {
-    id: 'frequency-tee-black',
-    title: 'Frequency Tee',
-    category: 'apparel',
-    price: 38,
-    description: 'Minimal geometric design on premium cotton. Comfortable enough for the studio, sharp enough for anywhere.',
-    edition: null,
-    sizes: ['S', 'M', 'L', 'XL', '2XL'],
-    details: [
-      '100% ring-spun cotton',
-      'Pre-shrunk, true to size',
-      'Screen printed in USA',
-      'Machine washable',
-    ],
-    image: null,
-  },
-  'minimalist-backpack': {
-    id: 'minimalist-backpack',
-    title: 'Minimalist Backpack',
-    category: 'objects',
-    price: 60,
-    description: 'Clean lines, functional design. Enough room for your essentials without the bulk.',
-    edition: null,
-    sizes: null,
-    details: [
-      'Water-resistant polyester exterior',
-      'Padded laptop sleeve (fits 15")',
-      'Interior organizer pockets',
-      'Adjustable padded straps',
-    ],
-    image: null,
-  },
-};
-
-const sizeGuide: Record<string, Record<string, string>> = {
-  apparel: {
-    'S': 'Chest 34-36"',
-    'M': 'Chest 38-40"',
-    'L': 'Chest 42-44"',
-    'XL': 'Chest 46-48"',
-    '2XL': 'Chest 50-52"',
-  },
-};
 
 export default function EditionDetail() {
   const { id } = useParams<{ id: string }>();
-  const product = id ? productsData[id] : null;
+  const { product, isLoading, error, isConfigured } = useProduct(id);
+  const { addToCart, isLoading: cartLoading } = useCart();
 
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
 
-  if (!product) {
+  // Find selected variant based on options
+  const selectedVariant = useMemo(() => {
+    if (!product) return null;
+
+    // If no options, return first variant
+    if (product.options.length === 0 || Object.keys(selectedOptions).length === 0) {
+      return product.variants[0];
+    }
+
+    return product.variants.find((variant) =>
+      variant.selectedOptions.every(
+        (opt) => selectedOptions[opt.name] === opt.value
+      )
+    );
+  }, [product, selectedOptions]);
+
+  // Initialize selected options with first values
+  useMemo(() => {
+    if (product && Object.keys(selectedOptions).length === 0) {
+      const initial: Record<string, string> = {};
+      product.options.forEach((option) => {
+        initial[option.name] = option.values[0];
+      });
+      setSelectedOptions(initial);
+    }
+  }, [product]);
+
+  const handleAddToCart = async () => {
+    if (!selectedVariant || !isConfigured) {
+      setIsAdding(true);
+      setTimeout(() => {
+        setIsAdding(false);
+        setIsAdded(true);
+        setTimeout(() => setIsAdded(false), 3000);
+      }, 1000);
+      return;
+    }
+
+    setIsAdding(true);
+    try {
+      await addToCart(selectedVariant.id, quantity);
+      setIsAdded(true);
+      setTimeout(() => setIsAdded(false), 3000);
+    } finally {
+      setIsAdding(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <div className="edition-detail edition-detail--loading">
+        <div className="container">
+          <p>Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !product) {
     return (
       <div className="edition-detail edition-detail--not-found">
         <div className="container">
@@ -110,19 +83,7 @@ export default function EditionDetail() {
     );
   }
 
-  const needsSize = product.sizes && product.sizes.length > 0;
-
-  const handleAddToCart = () => {
-    if (needsSize && !selectedSize) return;
-
-    setIsAdding(true);
-    // Will connect to Shopify cart later
-    setTimeout(() => {
-      setIsAdding(false);
-      setIsAdded(true);
-      setTimeout(() => setIsAdded(false), 3000);
-    }, 1000);
-  };
+  const hasOptions = product.options.length > 0 && product.options[0].values.length > 1;
 
   return (
     <div className="edition-detail">
@@ -143,12 +104,26 @@ export default function EditionDetail() {
             {/* Image */}
             <div className="edition-detail__image-column">
               <div className="edition-detail__image">
-                {product.image ? (
-                  <img src={product.image} alt={product.title} />
+                {product.featuredImage ? (
+                  <img
+                    src={product.featuredImage.url}
+                    alt={product.featuredImage.altText || product.title}
+                  />
                 ) : (
                   <div className="edition-detail__placeholder" />
                 )}
               </div>
+
+              {/* Additional images */}
+              {product.images.length > 1 && (
+                <div className="edition-detail__thumbnails">
+                  {product.images.slice(0, 4).map((image, index) => (
+                    <div key={index} className="edition-detail__thumbnail">
+                      <img src={image.url} alt={image.altText || ''} />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Info */}
@@ -156,54 +131,67 @@ export default function EditionDetail() {
               <div className="edition-detail__info">
                 {/* Category */}
                 <span className="edition-detail__category meta">
-                  {product.category}
+                  {product.productType || 'Product'}
                 </span>
 
                 {/* Title */}
                 <h1 className="edition-detail__title">{product.title}</h1>
 
-                {/* Edition */}
-                {product.edition && (
-                  <span className="edition-detail__edition">{product.edition}</span>
-                )}
-
                 {/* Price */}
-                <div className="edition-detail__price">${product.price}</div>
+                <div className="edition-detail__price">
+                  {selectedVariant ? (
+                    <>
+                      {formatPrice(
+                        selectedVariant.price.amount,
+                        selectedVariant.price.currencyCode
+                      )}
+                      {selectedVariant.compareAtPrice && (
+                        <span className="edition-detail__compare-price">
+                          {formatPrice(
+                            selectedVariant.compareAtPrice.amount,
+                            selectedVariant.compareAtPrice.currencyCode
+                          )}
+                        </span>
+                      )}
+                    </>
+                  ) : (
+                    formatPrice(
+                      product.priceRange.minVariantPrice.amount,
+                      product.priceRange.minVariantPrice.currencyCode
+                    )
+                  )}
+                </div>
 
                 {/* Description */}
-                <p className="edition-detail__description">{product.description}</p>
+                {product.description && (
+                  <p className="edition-detail__description">{product.description}</p>
+                )}
 
-                {/* Size Selector */}
-                {needsSize && (
-                  <div className="edition-detail__sizes">
-                    <div className="edition-detail__sizes-header">
-                      <span className="edition-detail__sizes-label">
-                        {product.category === 'apparel' ? 'Size' : 'Print Size'}
-                      </span>
-                      {product.category === 'apparel' && (
-                        <button className="edition-detail__size-guide">Size Guide</button>
-                      )}
+                {/* Options (Size, Color, etc.) */}
+                {hasOptions && product.options.map((option) => (
+                  <div key={option.name} className="edition-detail__option">
+                    <div className="edition-detail__option-header">
+                      <span className="edition-detail__option-label">{option.name}</span>
                     </div>
-                    <div className="edition-detail__size-options">
-                      {product.sizes?.map((size) => (
+                    <div className="edition-detail__option-values">
+                      {option.values.map((value) => (
                         <button
-                          key={size}
-                          className={`edition-detail__size ${
-                            selectedSize === size ? 'edition-detail__size--selected' : ''
+                          key={value}
+                          className={`edition-detail__option-btn ${
+                            selectedOptions[option.name] === value
+                              ? 'edition-detail__option-btn--selected'
+                              : ''
                           }`}
-                          onClick={() => setSelectedSize(size)}
+                          onClick={() =>
+                            setSelectedOptions((prev) => ({ ...prev, [option.name]: value }))
+                          }
                         >
-                          {size}
+                          {value}
                         </button>
                       ))}
                     </div>
-                    {product.category === 'apparel' && selectedSize && sizeGuide.apparel[selectedSize] && (
-                      <span className="edition-detail__size-info meta">
-                        {sizeGuide.apparel[selectedSize]}
-                      </span>
-                    )}
                   </div>
-                )}
+                ))}
 
                 {/* Quantity */}
                 <div className="edition-detail__quantity">
@@ -232,26 +220,27 @@ export default function EditionDetail() {
                     isAdded ? 'edition-detail__add-to-cart--added' : ''
                   }`}
                   onClick={handleAddToCart}
-                  disabled={isAdding || (needsSize && !selectedSize)}
+                  disabled={isAdding || cartLoading || (selectedVariant && !selectedVariant.availableForSale)}
                 >
-                  {isAdding ? 'Adding...' : isAdded ? 'Added to Cart' : 'Add to Cart'}
+                  {isAdding
+                    ? 'Adding...'
+                    : isAdded
+                    ? 'Added to Cart'
+                    : selectedVariant && !selectedVariant.availableForSale
+                    ? 'Sold Out'
+                    : 'Add to Cart'}
                 </button>
 
-                {needsSize && !selectedSize && (
-                  <span className="edition-detail__select-size-hint meta">
-                    Please select a size
-                  </span>
-                )}
-
-                {/* Details */}
-                <div className="edition-detail__details">
-                  <h3 className="edition-detail__details-title">Details</h3>
-                  <ul className="edition-detail__details-list">
-                    {product.details.map((detail, index) => (
-                      <li key={index}>{detail}</li>
+                {/* Tags/Details */}
+                {product.tags.length > 0 && (
+                  <div className="edition-detail__tags">
+                    {product.tags.map((tag) => (
+                      <span key={tag} className="edition-detail__tag meta">
+                        {tag}
+                      </span>
                     ))}
-                  </ul>
-                </div>
+                  </div>
+                )}
 
                 {/* Shipping note */}
                 <div className="edition-detail__shipping">
