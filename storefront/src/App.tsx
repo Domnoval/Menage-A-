@@ -6,6 +6,8 @@ import OriginalDetail from './routes/OriginalDetail';
 import Commissions from './routes/Commissions';
 import Editions from './routes/Editions';
 import EditionDetail from './routes/EditionDetail';
+import Digital from './routes/Digital';
+import Archive from './routes/Archive';
 
 export default function App() {
   return (
@@ -17,9 +19,8 @@ export default function App() {
         <Route path="/commissions" element={<Commissions />} />
         <Route path="/editions" element={<Editions />} />
         <Route path="/editions/:id" element={<EditionDetail />} />
-        {/* Future routes */}
-        {/* <Route path="/digital" element={<Digital />} /> */}
-        {/* <Route path="/archive" element={<Archive />} /> */}
+        <Route path="/digital" element={<Digital />} />
+        <Route path="/archive" element={<Archive />} />
       </Routes>
     </Layout>
   );
