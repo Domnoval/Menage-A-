@@ -1,0 +1,388 @@
+/* ============================================
+   HOME PAGE
+   Gallery-first. Initiation, not clearance rack.
+   ============================================ */
+
+.home {
+  padding-top: 60px; /* Account for fixed header */
+}
+
+/* ============================================
+   HERO
+   Cinematic. Breathing. Not shouting.
+   ============================================ */
+
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: var(--space-2xl) var(--gutter);
+  text-align: center;
+}
+
+.hero__content {
+  max-width: 1000px;
+}
+
+.hero__title {
+  font-size: var(--text-hero);
+  font-weight: 300;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  margin-bottom: var(--space-xl);
+}
+
+.hero__title-line {
+  display: block;
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeUp 0.8s ease-out forwards;
+}
+
+.hero__title-line:nth-child(1) { animation-delay: 0.2s; }
+.hero__title-line:nth-child(2) { animation-delay: 0.4s; }
+.hero__title-line:nth-child(3) { animation-delay: 0.6s; }
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.hero__subtitle {
+  opacity: 0;
+  animation: fadeIn 0.6s ease-out 1s forwards;
+}
+
+@keyframes fadeIn {
+  to { opacity: 1; }
+}
+
+/* Scroll Indicator - Subtle, not demanding */
+.hero__scroll-indicator {
+  position: absolute;
+  bottom: var(--space-2xl);
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-sm);
+  opacity: 0;
+  animation: fadeIn 0.6s ease-out 1.5s forwards;
+}
+
+.hero__scroll-text {
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--soft-ash);
+}
+
+.hero__scroll-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--soft-ash), transparent);
+  animation: scrollPulse 2s ease-in-out infinite;
+}
+
+@keyframes scrollPulse {
+  0%, 100% { opacity: 0.3; transform: scaleY(1); }
+  50% { opacity: 1; transform: scaleY(1.2); }
+}
+
+/* ============================================
+   SECTION HELPERS
+   ============================================ */
+
+.section-header {
+  margin-bottom: var(--space-2xl);
+}
+
+.section-title {
+  font-size: var(--text-display);
+  font-weight: 300;
+  margin-top: var(--space-xs);
+}
+
+.section-footer {
+  margin-top: var(--space-2xl);
+  text-align: center;
+}
+
+/* ============================================
+   FEATURED WORK
+   Crown jewel preview
+   ============================================ */
+
+.featured__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-lg);
+}
+
+@media (min-width: 768px) {
+  .featured__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .featured__item--large {
+    grid-column: span 2;
+  }
+}
+
+.featured__item {
+  position: relative;
+}
+
+.featured__link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.featured__image {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--charcoal);
+  margin-bottom: var(--space-md);
+}
+
+.featured__item--large .featured__image {
+  aspect-ratio: 16 / 9;
+}
+
+.featured__image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--charcoal) 0%, var(--charcoal-elevated) 100%);
+  transition: transform var(--transition-slow);
+}
+
+.featured__link:hover .featured__image-placeholder {
+  transform: scale(1.02);
+}
+
+.featured__info {
+  transition: transform var(--transition-base);
+}
+
+.featured__link:hover .featured__info {
+  transform: translateY(var(--shift-subtle));
+}
+
+.featured__title {
+  font-size: var(--text-subheading);
+  font-weight: 400;
+  margin-bottom: var(--space-xs);
+  transition: opacity var(--transition-base);
+}
+
+.featured__link:hover .featured__title {
+  opacity: var(--hover-opacity);
+}
+
+.featured__meta {
+  display: block;
+}
+
+/* ============================================
+   STUDIO WINGS
+   Navigation as constellation
+   ============================================ */
+
+.wings__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--charcoal-elevated);
+}
+
+@media (min-width: 640px) {
+  .wings__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .wings__grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+.wing {
+  display: flex;
+  flex-direction: column;
+  padding: var(--space-xl);
+  background: var(--charcoal);
+  text-decoration: none;
+  color: inherit;
+  transition: background var(--transition-base);
+}
+
+.wing:hover {
+  background: var(--charcoal-elevated);
+}
+
+.wing__number {
+  margin-bottom: var(--space-md);
+  font-family: var(--font-mono);
+}
+
+.wing__title {
+  font-size: var(--text-subheading);
+  font-weight: 400;
+  margin-bottom: var(--space-sm);
+  transition: transform var(--transition-base);
+}
+
+.wing:hover .wing__title {
+  transform: translateY(var(--shift-subtle));
+}
+
+.wing__description {
+  font-size: var(--text-small);
+  color: var(--soft-ash);
+  line-height: var(--leading-relaxed);
+}
+
+/* ============================================
+   ABOUT GLIMPSE
+   Quiet moment of intention
+   ============================================ */
+
+.about-glimpse {
+  text-align: center;
+}
+
+.about-glimpse__quote {
+  margin-bottom: var(--space-xl);
+}
+
+.about-glimpse__quote p {
+  font-size: var(--text-heading);
+  font-weight: 300;
+  font-style: italic;
+  color: var(--soft-ash);
+  max-width: none;
+  margin: 0 auto;
+}
+
+.about-glimpse__cta {
+  display: flex;
+  justify-content: center;
+}
+
+/* ============================================
+   NEWSLETTER
+   Joining a cult, but a friendly one
+   ============================================ */
+
+.newsletter {
+  text-align: center;
+}
+
+.newsletter__header {
+  margin-bottom: var(--space-xl);
+}
+
+.newsletter__title {
+  font-size: var(--text-heading);
+  font-weight: 400;
+  margin-bottom: var(--space-sm);
+}
+
+.newsletter__description {
+  color: var(--soft-ash);
+}
+
+.newsletter__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: 400px;
+  margin: 0 auto var(--space-md);
+}
+
+@media (min-width: 640px) {
+  .newsletter__form {
+    flex-direction: row;
+    max-width: 500px;
+  }
+}
+
+.newsletter__input {
+  flex: 1;
+  padding: var(--space-sm) var(--space-md);
+  background: transparent;
+  border: 1px solid var(--muted-ash);
+  color: var(--white);
+  font-size: var(--text-body);
+  font-family: inherit;
+  transition: border-color var(--transition-base);
+}
+
+.newsletter__input::placeholder {
+  color: var(--muted-ash);
+}
+
+.newsletter__input:focus {
+  outline: none;
+  border-color: var(--white);
+}
+
+.newsletter__submit {
+  white-space: nowrap;
+}
+
+.newsletter__note {
+  color: var(--muted-ash);
+}
+
+/* ============================================
+   MOTION: Subtle entrance animations
+   ============================================ */
+
+.section-header,
+.featured__item,
+.wing,
+.about-glimpse__quote,
+.newsletter__header {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: sectionFadeIn 0.6s ease-out forwards;
+  animation-play-state: paused;
+}
+
+/* Trigger animations when in viewport (handled by JS or IntersectionObserver) */
+.section-header,
+.featured__item,
+.wing,
+.about-glimpse__quote,
+.newsletter__header {
+  animation-play-state: running;
+}
+
+@keyframes sectionFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger featured items */
+.featured__item:nth-child(1) { animation-delay: 0.1s; }
+.featured__item:nth-child(2) { animation-delay: 0.2s; }
+.featured__item:nth-child(3) { animation-delay: 0.3s; }
+
+/* Stagger wings */
+.wing:nth-child(1) { animation-delay: 0.1s; }
+.wing:nth-child(2) { animation-delay: 0.15s; }
+.wing:nth-child(3) { animation-delay: 0.2s; }
+.wing:nth-child(4) { animation-delay: 0.25s; }
+.wing:nth-child(5) { animation-delay: 0.3s; }

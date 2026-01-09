@@ -1,0 +1,301 @@
+/*
+ * TONIC THOUGHT STUDIOS
+ * Design System: "No Accent System"
+ *
+ * Core Principle: Remove color. Increase meaning.
+ * The interface is a neutral container so the artwork carries all visual intensity.
+ */
+
+/* ============================================
+   COLOR SYSTEM (LOCKED)
+   ============================================ */
+:root {
+  /* Primary Surfaces */
+  --void-black: #0a0a0a;
+  --charcoal: #1a1a1a;
+  --charcoal-elevated: #242424;
+
+  /* Text Hierarchy */
+  --white: #ffffff;
+  --soft-ash: #888888;
+  --muted-ash: #555555;
+
+  /* Interaction States (opacity-based, not color) */
+  --hover-opacity: 0.7;
+  --active-opacity: 0.5;
+
+  /* Future Accents (dormant - only for earned moments) */
+  --bone: #e8e4dc;
+  --ash-silver: #b0b0b0;
+  --muted-cyan: #5a8a8a;
+}
+
+/* ============================================
+   TYPOGRAPHY SYSTEM
+   Typography replaces color as the primary signal system.
+   ============================================ */
+:root {
+  /* Font Families */
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Type Scale - Headlines: large, confident, minimal tracking */
+  --text-hero: clamp(3rem, 8vw, 6rem);
+  --text-display: clamp(2rem, 5vw, 3.5rem);
+  --text-heading: clamp(1.5rem, 3vw, 2rem);
+  --text-subheading: 1.25rem;
+
+  /* Body: calm, readable, generous line-height */
+  --text-body: 1rem;
+  --text-small: 0.875rem;
+
+  /* Metadata: smaller, soft ash */
+  --text-meta: 0.75rem;
+  --text-micro: 0.625rem;
+
+  /* Line Heights */
+  --leading-tight: 1.1;
+  --leading-snug: 1.25;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.75;
+
+  /* Letter Spacing */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.05em;
+  --tracking-wider: 0.1em;
+}
+
+/* ============================================
+   SPACING SYSTEM
+   Silence replaces ornamentation.
+   ============================================ */
+:root {
+  --space-xs: 0.5rem;    /* 8px */
+  --space-sm: 1rem;      /* 16px */
+  --space-md: 1.5rem;    /* 24px */
+  --space-lg: 2rem;      /* 32px */
+  --space-xl: 3rem;      /* 48px */
+  --space-2xl: 4rem;     /* 64px */
+  --space-3xl: 6rem;     /* 96px */
+  --space-4xl: 8rem;     /* 128px */
+
+  /* Section Rhythm */
+  --section-gap: var(--space-4xl);
+  --content-gap: var(--space-xl);
+}
+
+/* ============================================
+   MOTION SYSTEM
+   Motion is allowed only when meaningful.
+   The interface "noticing" the user.
+   ============================================ */
+:root {
+  --transition-fast: 150ms ease-out;
+  --transition-base: 250ms ease-out;
+  --transition-slow: 400ms ease-out;
+  --transition-slower: 600ms ease-out;
+
+  /* Subtle vertical shifts (2–6px) */
+  --shift-subtle: -2px;
+  --shift-moderate: -4px;
+  --shift-noticeable: -6px;
+}
+
+/* ============================================
+   LAYOUT
+   ============================================ */
+:root {
+  --container-max: 1400px;
+  --container-narrow: 800px;
+  --container-wide: 1800px;
+
+  --gutter: clamp(1rem, 4vw, 3rem);
+}
+
+/* ============================================
+   BASE RESET & DEFAULTS
+   ============================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-body);
+  line-height: var(--leading-normal);
+  color: var(--white);
+  background-color: var(--void-black);
+  min-height: 100vh;
+}
+
+/* ============================================
+   TYPOGRAPHY DEFAULTS
+   ============================================ */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 400;
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+}
+
+h1 { font-size: var(--text-hero); }
+h2 { font-size: var(--text-display); }
+h3 { font-size: var(--text-heading); }
+h4 { font-size: var(--text-subheading); }
+
+p {
+  line-height: var(--leading-relaxed);
+  max-width: 65ch;
+}
+
+/* Metadata styling */
+.meta {
+  font-size: var(--text-meta);
+  color: var(--soft-ash);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+/* ============================================
+   LINK & BUTTON SYSTEM
+   No filled color buttons.
+   Text-only or outlined.
+   ============================================ */
+a {
+  color: var(--white);
+  text-decoration: none;
+  transition: opacity var(--transition-base);
+}
+
+a:hover {
+  opacity: var(--hover-opacity);
+}
+
+/* Primary CTA - stands out via placement and isolation, not color */
+.cta {
+  display: inline-block;
+  font-size: var(--text-small);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--white);
+  background: transparent;
+  border: none;
+  padding: var(--space-sm) 0;
+  cursor: pointer;
+  position: relative;
+  transition: all var(--transition-base);
+}
+
+.cta::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--white);
+  transition: width var(--transition-base);
+}
+
+.cta:hover::after {
+  width: 100%;
+}
+
+.cta:hover {
+  opacity: var(--hover-opacity);
+}
+
+.cta:active {
+  opacity: var(--active-opacity);
+  transform: scale(0.98);
+}
+
+/* Outlined variant */
+.cta--outlined {
+  border: 1px solid var(--white);
+  padding: var(--space-sm) var(--space-lg);
+}
+
+.cta--outlined::after {
+  display: none;
+}
+
+.cta--outlined:hover {
+  background: var(--white);
+  color: var(--void-black);
+  opacity: 1;
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+}
+
+.container--narrow {
+  max-width: var(--container-narrow);
+}
+
+.container--wide {
+  max-width: var(--container-wide);
+}
+
+/* Visual separation through space, not decoration */
+.section {
+  padding: var(--section-gap) 0;
+}
+
+.section--dark {
+  background: var(--charcoal);
+}
+
+/* Image handling - artwork is always the loudest element */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Selection styling */
+::selection {
+  background: var(--white);
+  color: var(--void-black);
+}
+
+/* Scrollbar styling - subtle */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--void-black);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--charcoal-elevated);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted-ash);
+}
+
+/* Focus states - accessibility without color */
+:focus-visible {
+  outline: 1px solid var(--white);
+  outline-offset: 4px;
+}

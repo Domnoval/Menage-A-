@@ -1,0 +1,316 @@
+/* ============================================
+   ORIGINALS GALLERY
+   Crown jewels. Ceremonial. Not a product grid.
+   ============================================ */
+
+.originals {
+  padding-top: 60px;
+}
+
+/* ============================================
+   HERO
+   ============================================ */
+
+.originals__hero {
+  padding: var(--space-4xl) 0 var(--space-2xl);
+  text-align: center;
+}
+
+.originals__title {
+  font-size: var(--text-hero);
+  font-weight: 300;
+  margin: var(--space-sm) 0 var(--space-lg);
+  letter-spacing: var(--tracking-tight);
+}
+
+.originals__description {
+  font-size: var(--text-body);
+  color: var(--soft-ash);
+  max-width: 50ch;
+  margin: 0 auto;
+}
+
+/* ============================================
+   FILTER BAR
+   Minimal. Not shouting.
+   ============================================ */
+
+.originals__filter-bar {
+  border-bottom: 1px solid var(--charcoal-elevated);
+  position: sticky;
+  top: 60px;
+  background: var(--void-black);
+  z-index: 50;
+}
+
+.originals__filters {
+  display: flex;
+  gap: var(--space-xl);
+  padding: var(--space-md) 0;
+}
+
+.originals__filter {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  background: none;
+  border: none;
+  font-size: var(--text-small);
+  color: var(--soft-ash);
+  cursor: pointer;
+  padding: var(--space-xs) 0;
+  position: relative;
+  transition: color var(--transition-base);
+}
+
+.originals__filter::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--white);
+  transition: width var(--transition-base);
+}
+
+.originals__filter:hover {
+  color: var(--white);
+}
+
+.originals__filter--active {
+  color: var(--white);
+}
+
+.originals__filter--active::after {
+  width: 100%;
+}
+
+.originals__filter-count {
+  font-family: var(--font-mono);
+  font-size: var(--text-micro);
+  color: var(--muted-ash);
+}
+
+/* ============================================
+   GALLERY GRID
+   Masonry-ish. Breathing room.
+   ============================================ */
+
+.originals__gallery {
+  padding: var(--space-3xl) 0;
+}
+
+.originals__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-2xl);
+}
+
+@media (min-width: 640px) {
+  .originals__grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-xl);
+  }
+}
+
+@media (min-width: 1024px) {
+  .originals__grid {
+    gap: var(--space-2xl);
+  }
+}
+
+/* ============================================
+   ORIGINAL CARD
+   Each piece is an artifact, not a SKU.
+   ============================================ */
+
+.original-card {
+  opacity: 0;
+  animation: cardFadeIn 0.6s ease-out forwards;
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.original-card__link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+}
+
+/* Image */
+.original-card__image-wrapper {
+  position: relative;
+  margin-bottom: var(--space-md);
+  overflow: hidden;
+}
+
+.original-card__image {
+  aspect-ratio: 4 / 5;
+  background: var(--charcoal);
+  overflow: hidden;
+}
+
+.original-card__image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.original-card__link:hover .original-card__image img {
+  transform: scale(1.03);
+}
+
+.original-card__placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    145deg,
+    var(--charcoal) 0%,
+    var(--charcoal-elevated) 50%,
+    var(--charcoal) 100%
+  );
+  transition: transform var(--transition-slow);
+}
+
+.original-card__link:hover .original-card__placeholder {
+  transform: scale(1.03);
+}
+
+/* Sold badge */
+.original-card__status {
+  position: absolute;
+  top: var(--space-md);
+  left: var(--space-md);
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--soft-ash);
+  background: var(--void-black);
+  padding: var(--space-xs) var(--space-sm);
+}
+
+/* Sold state - subtle desaturation */
+.original-card--sold .original-card__image {
+  opacity: 0.6;
+}
+
+.original-card--sold .original-card__title {
+  color: var(--soft-ash);
+}
+
+/* Info */
+.original-card__info {
+  transition: transform var(--transition-base);
+}
+
+.original-card__link:hover .original-card__info {
+  transform: translateY(var(--shift-subtle));
+}
+
+.original-card__title {
+  font-size: var(--text-subheading);
+  font-weight: 400;
+  margin-bottom: var(--space-xs);
+  transition: opacity var(--transition-base);
+}
+
+.original-card__link:hover .original-card__title {
+  opacity: var(--hover-opacity);
+}
+
+.original-card__meta {
+  font-size: var(--text-small);
+  color: var(--soft-ash);
+  margin-bottom: var(--space-xs);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.original-card__separator {
+  margin: 0 var(--space-xs);
+  color: var(--muted-ash);
+}
+
+.original-card__dimensions {
+  display: block;
+}
+
+/* Hover CTA */
+.original-card__cta {
+  position: absolute;
+  bottom: var(--space-md);
+  right: 0;
+  font-size: var(--text-meta);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--white);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all var(--transition-base);
+}
+
+.original-card__link:hover .original-card__cta {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.original-card__cta::before {
+  content: '→ ';
+}
+
+/* ============================================
+   COMMISSION CTA
+   Soft upsell. Not pushy.
+   ============================================ */
+
+.commission-prompt {
+  text-align: center;
+  padding: var(--space-3xl);
+  background: var(--charcoal);
+}
+
+.commission-prompt__title {
+  font-size: var(--text-heading);
+  font-weight: 400;
+  margin-bottom: var(--space-sm);
+}
+
+.commission-prompt__text {
+  color: var(--soft-ash);
+  margin-bottom: var(--space-xl);
+}
+
+/* ============================================
+   RESPONSIVE TWEAKS
+   ============================================ */
+
+@media (max-width: 640px) {
+  .originals__hero {
+    padding: var(--space-2xl) 0 var(--space-xl);
+  }
+
+  .originals__title {
+    font-size: var(--text-display);
+  }
+
+  .originals__filters {
+    gap: var(--space-lg);
+  }
+
+  .commission-prompt {
+    padding: var(--space-2xl) var(--space-lg);
+  }
+}
